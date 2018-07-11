@@ -1,8 +1,8 @@
 const router = require("express").Router();
-const userService = require("../../services/user");
+const messageService = require("../../services/message");
 
 router.get("/", (req, res, next) => {
-    userService.findAll((err, data) => {
+    messageService.findAll((err, data) => {
         if (!err) {
             res.data = data;
             res.json(res.data);
@@ -14,7 +14,7 @@ router.get("/", (req, res, next) => {
 });
 
 router.get("/:id", (req, res, next) => {
-    userService.findOne(Number(req.params.id), (err, data) => {
+    messageService.findOne(Number(req.params.id), (err, data) => {
         if (!err) {
             res.data = data;
             res.json(res.data);
@@ -26,7 +26,7 @@ router.get("/:id", (req, res, next) => {
 });
 
 router.delete("/:id", (req, res, next) => {
-    userService.removeOne(Number(req.params.id), (err, data) => {
+    messageService.removeOne(Number(req.params.id), (err, data) => {
         if (!err) {
             res.data = data;
             res.json(res.data);
@@ -38,7 +38,7 @@ router.delete("/:id", (req, res, next) => {
 });
 
 router.post("/", (req, res, next) => {
-    userService.save(req.body, (err, data) => {
+    messageService.save(req.body, (err, data) => {
         if (!err) {
             res.data = data;
             res.json(res.data);
@@ -49,8 +49,8 @@ router.post("/", (req, res, next) => {
     });
 });
 
-router.put("/:id", (req, res, next) => {
-    userService.update(req.body, (err, data) => {
+router.put("/:senderId", (req, res, next) => {
+    messageService.update(req.body, (err, data) => {
         if (!err) {
             res.data = data;
             res.json(res.data);
