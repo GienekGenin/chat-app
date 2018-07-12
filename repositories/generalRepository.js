@@ -13,7 +13,7 @@ function getAll(callback) {
 function saveOne(obj, callback) {
     let model = this.model;
     model.create(obj);
-    // query.exec(callback);
+    callback();
 }
 
 module.exports = Repository;

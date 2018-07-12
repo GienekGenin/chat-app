@@ -40,8 +40,7 @@ router.delete("/:id", (req, res, next) => {
 router.post("/", (req, res, next) => {
     messageService.save(req.body, (err, data) => {
         if (!err) {
-            res.data = data;
-            res.json(res.data);
+            res.json(req.body);
         } else {
             res.status(400);
             res.end();
