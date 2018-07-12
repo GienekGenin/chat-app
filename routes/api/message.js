@@ -14,7 +14,7 @@ router.get("/", (req, res, next) => {
 });
 
 router.get("/:id", (req, res, next) => {
-    messageService.findOne(Number(req.params.id), (err, data) => {
+    messageService.findAllWithId(Number(req.params.id), (err, data) => {
         if (!err) {
             res.data = data;
             res.json(res.data);

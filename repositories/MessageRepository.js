@@ -15,7 +15,7 @@ MessageRepository.prototype = new Repository();
 
 function getById(id, callback) {
     let model = this.model;
-    let query = model.findOne({
+    let query = model.find({
         senderId: id
     });
     query.exec(callback);

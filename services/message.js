@@ -7,7 +7,7 @@ module.exports = {
         });
     },
 
-    findOne: (id, callback) => {
+    findAllWithId: (id, callback) => {
         MessageRepository.getById(id, (err, data) => {
             callback(err, data);
         });
