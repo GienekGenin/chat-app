@@ -23,7 +23,6 @@ function getById(id, callback) {
 
 function getByIds(ids, callback) {
     let model = this.model;
-    console.log(ids, 'ids');
     let query = model.find({id: {$in: ids}});
     query.exec(callback);
 }

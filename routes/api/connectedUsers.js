@@ -23,8 +23,6 @@ router.get("/:id", (req, res, next) => {
                     res.end();
                 }
             });
-            // res.data = data;
-            // res.json(res.data);
         } else {
             res.status(400);
             res.end();

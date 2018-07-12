@@ -38,7 +38,6 @@ router.delete("/:id", (req, res, next) => {
 });
 
 router.post("/", (req, res, next) => {
-    console.log(req.body, 'in post user');
     userService.save(req.body, (err, data) => {
         if (!err) {
             res.json(req.body);
