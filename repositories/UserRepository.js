@@ -6,6 +6,7 @@ function UserRepository() {
     Repository.prototype.constructor.call(this);
     this.model = User;
     this.getById = getById;
+    this.getByIds = getByIds;
     this.removeById = removeById;
     this.update = update;
 }
@@ -17,6 +18,13 @@ function getById(id, callback) {
     let query = model.findOne({
         id: id
     });
+    query.exec(callback);
+}
+
+function getByIds(ids, callback) {
+    let model = this.model;
+    console.log(ids, 'ids');
+    let query = model.find({id: {$in: ids}});
     query.exec(callback);
 }
 

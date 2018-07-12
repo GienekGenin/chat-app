@@ -30,4 +30,12 @@ module.exports = {
             callback(err, data);
         });
     },
+
+    connectedUsers: (id, callback) => {
+        MessageRepository.connectedUsers(id, (err, data) => {
+            callback(err, data);
+        });
+    }
+
+
 };

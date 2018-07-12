@@ -7,6 +7,12 @@ module.exports = {
         });
     },
 
+    findAllWithIds: (ids, callback) => {
+        UserRepository.getByIds(ids, (err, data) => {
+            callback(err, data);
+        });
+    },
+
     findOne: (id, callback) => {
         UserRepository.getById(id, (err, data) => {
             callback(err, data);
