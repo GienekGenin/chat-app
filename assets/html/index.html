@@ -22,15 +22,25 @@
 </head>
 <body>
 <div class="container">
-    <div class="row">
+    <div class="row login">
         <h1>Chat app</h1>
         <span>Log in</span>
         <form action="#">
-
+            <label for="name">Name</label><input type="text" id="name"><br>
+            <label for="nik_name">Nik</label><input type="text" id="nik_name">
         </form>
     </div>
-    <div class="row chat">
-        <span>chat</span>
+    <div class="row chat-app">
+        <aside>
+
+        </aside>
+        <div class="messages">
+
+        </div>
+    </div>
+    <div class="row control">
+        <label for="msg">Message</label><input type="text" id="msg">
+        <button>Send</button>
     </div>
 </div>
 <script src="socket.io-client/dist/socket.io.js"></script>
