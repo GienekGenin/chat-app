@@ -8,27 +8,26 @@ body {
 
 .chat-app {
     display: grid;
-    grid-template-columns: 20% 80%;
+    grid-template-columns: auto auto;
 }
 
-/*users*/
-aside {
-    display: flex;
-    flex-wrap: wrap;
-    align-content: start;
+#app-name {
+    grid-column: 1 / span 2;
 }
 
-.user_box {
-    width: 100%;
-}
-
-/*users messages*/
-#messages {
-    display: flex;
-    flex-wrap: wrap;
-    align-content: start;
+#control {
+    grid-column: 2;
 }
 
 .msg_box {
-    width: 100%;
+    display: grid;
+    grid-template-columns: auto auto;
+}
+
+.msg_box span:last-child {
+    grid-column: 1 / span 2;
+}
+
+#typing{
+    grid-column: 2;
 }
