@@ -10,14 +10,14 @@ let server = require('http').Server(app);
 const port = 8000;
 
 app.use(
-  session({
-    secret: "sessionsecretsessionsecret",
-    resave: true,
-    saveUninitialized: true,
-    store: new MongoStore({
-      mongooseConnection: mongooseConnection
+    session({
+        secret: "sessionsecretsessionsecret",
+        resave: true,
+        saveUninitialized: true,
+        store: new MongoStore({
+            mongooseConnection: mongooseConnection
+        })
     })
-  })
 );
 
 app.use(express.static(path.normalize(__dirname + "/assets/html")));
@@ -26,7 +26,7 @@ app.use(express.static(path.normalize(__dirname + "/assets/styles")));
 app.use(express.static(path.normalize(__dirname + "/node_modules")));
 
 app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.urlencoded({extended: true}));
 
 const routes = require("./routes/api/routes")(app);
 
@@ -39,14 +39,23 @@ server = app.listen(port, function () {
 const io = require('socket.io')(server);
 
 let messages = [];
+let users = [];
 
-io.on('connection', function(socket){
+io.on('connection', function (socket) {
     console.log('New connection');
 
     socket.on('chat_message', function (msg) {
+        if (messages.length >= 100) {
+            messages.shift();
+        }
         messages.push(msg);
         io.emit('chat_message', msg);
     });
 
-    socket.emit('chat_history', messages);
+    socket.on('new_user', function (user) {
+        users.push(user);
+        io.emit('new_user', user);
+    });
+
+    socket.emit('chat_history', messages, users);
 });
