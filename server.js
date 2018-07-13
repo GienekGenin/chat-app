@@ -20,8 +20,9 @@ app.use(
   })
 );
 
-app.use(express.static(path.normalize(__dirname + "/public")));
-app.use(express.static(path.normalize(__dirname + "/scripts")));
+app.use(express.static(path.normalize(__dirname + "/assets/html")));
+app.use(express.static(path.normalize(__dirname + "/assets/scripts")));
+app.use(express.static(path.normalize(__dirname + "/assets/styles")));
 app.use(express.static(path.normalize(__dirname + "/node_modules")));
 
 app.use(bodyParser.json());
