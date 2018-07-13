@@ -2,6 +2,33 @@ body {
     background-color: whitesmoke;
 }
 
-.login{
-    
+.login {
+    display: grid;
+}
+
+.chat-app {
+    display: grid;
+    grid-template-columns: 20% 80%;
+}
+
+/*users*/
+aside {
+    display: flex;
+    flex-wrap: wrap;
+    align-content: start;
+}
+
+aside span {
+    width: 100%;
+}
+
+/*users messages*/
+#messages {
+    display: flex;
+    flex-wrap: wrap;
+    align-content: start;
+}
+
+#messages span {
+    width: 100%;
 }

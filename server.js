@@ -38,6 +38,15 @@ server = app.listen(port, function () {
 
 const io = require('socket.io')(server);
 
+let messages = [];
+
 io.on('connection', function(socket){
     console.log('New connection');
+
+    socket.on('chat_message', function (msg) {
+        messages.push(msg);
+        io.emit('chat_message', msg);
+    });
+
+    socket.emit('chat_history', messages);
 });
