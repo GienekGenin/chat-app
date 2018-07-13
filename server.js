@@ -40,6 +40,7 @@ const io = require('socket.io')(server);
 
 let messages = [];
 let users = [];
+let typingUsers = [];
 
 io.on('connection', function (socket) {
     console.log('New connection');
@@ -55,6 +56,23 @@ io.on('connection', function (socket) {
     socket.on('new_user', function (user) {
         users.push(user);
         io.emit('new_user', user);
+    });
+
+    socket.on('typing', function (user) {
+        let counter = 0;
+        for(let i = 0;i<typingUsers.length;i++){
+            if(typingUsers[i] === user){
+                counter++;
+            }
+        }
+        if(counter === 0){
+            typingUsers.push(user);
+        }
+        console.log(typingUsers);
+    });
+
+    socket.on('stop_typing', function (user) {
+        console.log('stop_typing');
     });
 
     socket.emit('chat_history', messages, users);

@@ -3,6 +3,10 @@
     let button_send = document.getElementById('send');
     let messages = document.getElementById('messages');
     let users = document.getElementById('users');
+    let input_msg = document.getElementById('msg');
+    let typingUsers = document.getElementById('typing');
+
+    input_msg.value = "";
 
     let socket = io.connect();
 
@@ -21,6 +25,8 @@
         } else {
             user.name = name.value;
             user.nik = nik.value;
+            input_msg.disabled = false;
+            button_send.disabled = false;
             userHeader.innerText = user.name;
             socket.emit('new_user', user);
         }
@@ -40,10 +46,19 @@
             data.time = moment().format("HH:mm:ss");
             msg.value = "";
             socket.emit('chat_message', data);
+            socket.emit('stop_typing', '@' + user.name);
         }
     };
 
-    socket.on('chat_history', function (msgs,users) {
+    input_msg.onkeydown = function (e) {
+        if(e.key === "Backspace"){
+            socket.emit('stop_typing', '@' + user.name);
+        } else {
+            socket.emit('typing', '@' + user.name);
+        }
+    };
+
+    socket.on('chat_history', function (msgs, users) {
         for (let i = 0; i < msgs.length; i++) {
             createMsg(msgs[i]);
         }
@@ -51,6 +66,24 @@
             craeteUser(users[i]);
         }
     });
+
+    socket.on('typing', function (users) {
+
+    });
+
+    socket.on('stop_typing', function (users) {
+
+    });
+
+    /*        for(let i = 0;i<users.length;i++){
+            let newTypo = document.createElement('div');
+            let name = document.createElement('span');
+            name.setAttribute('class', 'typing_user');
+            let nameText = document.createTextNode(users[i]);
+            name.appendChild(nameText);
+            newTypo.appendChild(name);
+            typingUsers.appendChild(newTypo);
+        }*/
 
     socket.on('chat_message', function (msg) {
         createMsg(msg);
