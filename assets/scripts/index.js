@@ -8,19 +8,63 @@
 
     input_msg.value = "";
 
-    let socket = io.connect();
-
     let user = {
         'name': 'User name',
-        'nik': 'User nik',
-        'status': String,
-        'created': String,
-        'exit': String
+        'nik': 'User nik'
     };
     let typing_status = true;
     let existing_users = [];
     let userHeader = document.getElementById('userName');
     userHeader.innerText = user.name;
+
+    let ajaxReq = function (options) {
+        let url = options.url || '/';
+        let method = options.method || 'GET';
+        let callback = options.callback || function () {
+        };
+        let data = options.data || {};
+        let xmlHttp = new XMLHttpRequest();
+
+        xmlHttp.open(method, url, true);
+        xmlHttp.setRequestHeader('Content-Type', 'application/json');
+        xmlHttp.send(JSON.stringify(data));
+
+        xmlHttp.onreadystatechange = function () {
+            if (xmlHttp.status == 200 && xmlHttp.readyState === 4) {
+                callback(xmlHttp.responseText);
+            }
+        }
+    };
+
+    let getMessages = function () {
+      ajaxReq({
+          url:'/messages',
+          method:'GET',
+          callback:function (msg) {
+              msg = JSON.parse(msg);
+              console.log(msg);
+          }
+      })
+    };
+
+    let getUsers = function () {
+        ajaxReq({
+            url:'/users',
+            method:'GET',
+            callback:function (msg) {
+                msg = JSON.parse(msg);
+                console.log(msg);
+            }
+        })
+    };
+
+    getUsers();
+    getMessages();
+
+    setInterval(function () {
+        getUsers();
+        getMessages();
+    },1000);
 
     button_login.onclick = function () {
         let name = document.getElementById('name');
@@ -32,27 +76,26 @@
                 if (existing_users[i].name === name.value) {
                     user.name = name.value;
                     user.nik = nik.value;
-                    user.created = moment().format("HH:mm:ss");
-                    user.exit = false;
                     input_msg.disabled = false;
                     button_send.disabled = false;
                     userHeader.innerText = user.name;
-                    socket.emit('new_connection', user);
                     return;
                 }
             }
             existing_users.push(user);
             user.name = name.value;
             user.nik = nik.value;
-            user.created = moment().format("HH:mm:ss");
-            user.exit = false;
             input_msg.disabled = false;
             button_send.disabled = false;
             userHeader.innerText = user.name;
-            socket.emit('new_user', user);
             let form = document.getElementsByTagName('form');
             let formParent = form[0].parentNode;
             formParent.removeChild(form[0]);
+            ajaxReq({
+                method: 'POST',
+                url: '/users',
+                data: user
+            });
         }
     };
 
@@ -69,115 +112,18 @@
             data.text = msg.value;
             data.time = moment().format("HH:mm:ss");
             msg.value = "";
-            socket.emit('chat_message', data);
-            socket.emit('stop_typing', '@' + user.name);
             typing_status = true;
+            ajaxReq({
+                method: 'POST',
+                url: '/messages',
+                data: data
+            });
         }
     };
-
-    input_msg.onkeydown = function (e) {
-        if (e.key === "Backspace") {
-            socket.emit('stop_typing', '@' + user.name);
-            typing_status = true;
-        } else {
-            if (typing_status === true) {
-                socket.emit('typing', '@' + user.name);
-                typing_status = false;
-            }
-        }
-    };
-
-    socket.on('chat_history', function (msgs, users, typing_users) {
-        console.log(users);
-        existing_users = users;
-        for (let i = 0; i < msgs.length; i++) {
-            createMsg(msgs[i]);
-        }
-        for (let i = 0; i < users.length; i++) {
-            createUser(users[i]);
-        }
-        removeTypos();
-        createNewTypo(typing_users);
-    });
-
-    socket.on('typing', function (_users) {
-        removeTypos();
-        createNewTypo(_users);
-    });
-
-    socket.on('stop_typing', function (_users) {
-        removeTypos();
-        createNewTypo(_users);
-    });
-
-    socket.on('chat_message', function (msg) {
-        createMsg(msg);
-    });
-
-    socket.on('new_user', function (user) {
-        createUser(user);
-    });
-
-    socket.on('new_connection', function (_user) {
-        let secondsLeft = -moment(_user.created, 'HH:mm:ss').diff(moment(), 'seconds');
-        let user_box = document.getElementsByClassName('user_box');
-        for (let i = 0; i < user_box.length; i++) {
-            if (user_box[i].firstChild.innerText === _user.name) {
-                if(secondsLeft < 60){
-                    console.log('new_connection < 60');
-                    user_box[i].setAttribute('class', 'user_box fresh');
-                }
-                setTimeout(function () {
-                    console.log('new_connection > 60');
-                    user_box[i].setAttribute('class', 'user_box online');
-                }, 60000 - secondsLeft*1000);
-            }
-        }
-    });
-
-    socket.on('exit', function (_user) {
-        let secondsLeft = -moment(_user.exit, 'HH:mm:ss').diff(moment(), 'seconds');
-        let user_box = document.getElementsByClassName('user_box');
-        for (let i = 0; i < user_box.length; i++) {
-            if (user_box[i].firstChild.innerText === _user.name) {
-                if(secondsLeft < 60){
-                    console.log('exit < 60');
-                    user_box[i].setAttribute('class', 'user_box just_leave');
-                }
-                setTimeout(function () {
-                    console.log('exit > 60');
-                    user_box[i].setAttribute('class', 'user_box offline');
-                }, 60000 - secondsLeft*1000);
-            }
-        }
-    });
 
     function createUser(_user) {
         let user_box = document.createElement('div');
         user_box.setAttribute('class', 'user_box');
-        if(_user.created){
-            let secondsLeft = -moment(_user.created, 'HH:mm:ss').diff(moment(), 'seconds');
-            if(secondsLeft < 60){
-                console.log('new_connection < 60');
-                user_box.setAttribute('class', 'user_box fresh');
-            }
-            setTimeout(function () {
-                console.log('new_connection > 60');
-                user_box.setAttribute('class', 'user_box online');
-            }, 60000 - secondsLeft*1000);
-        }
-        if(_user.exit){
-            let secondsLeft = -moment(_user.exit, 'HH:mm:ss').diff(moment(), 'seconds');
-            console.log(secondsLeft);
-            if(secondsLeft < 60){
-                console.log('exit < 60');
-                user_box.setAttribute('class', 'user_box just_leave');
-            }
-            setTimeout(function () {
-                console.log('exit > 60');
-                user_box.setAttribute('class', 'user_box offline');
-            }, 60000 - secondsLeft*1000);
-        }
         let name = document.createElement('span');
         let nik = document.createElement('span');
         let nameText = document.createTextNode(_user.name);
@@ -207,36 +153,4 @@
         messages.appendChild(msg_box);
     }
 
-    function createNewTypo(_users) {
-        for (let i = 0; i < _users.length; i++) {
-            let newTypo = document.createElement('div');
-            let name = document.createElement('span');
-            name.setAttribute('class', 'typing_user');
-            let nameText = document.createTextNode(_users[i] + ' is typing');
-            name.appendChild(nameText);
-            newTypo.appendChild(name);
-            typingUsers.appendChild(newTypo);
-        }
-    }
-
-    function removeTypos() {
-        let typoChildren = [];
-        for (let i = 0; i < typingUsers.childNodes.length; i++) {
-            typoChildren.push(typingUsers.childNodes[i]);
-        }
-        for (let i = 0; i < typoChildren.length; i++) {
-            typingUsers.removeChild(typoChildren[i]);
-        }
-    }
 })();
-
-/*
-    socket.on('user_status_online',function (user) {
-        let user_box = document.getElementsByClassName('user_box');
-        for (let i = 0; i < user_box.length; i++) {
-            if (user_box[i].firstChild.innerText === user.name) {
-                user_box[i].setAttribute('class', 'user_box online');
-            }
-        }
-    });
-* */
