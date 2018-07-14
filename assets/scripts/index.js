@@ -79,27 +79,17 @@
         for (let i = 0; i < users.length; i++) {
             createUser(users[i]);
         }
+        removeTypos();
+        createNewTypo(typing_users);
     });
 
     socket.on('typing', function (_users) {
-        let typoChildren = [];
-        for (let i = 0; i < typingUsers.childNodes.length; i++) {
-            typoChildren.push(typingUsers.childNodes[i]);
-        }
-        for (let i = 0; i < typoChildren.length; i++) {
-            typingUsers.removeChild(typoChildren[i]);
-        }
+        removeTypos();
         createNewTypo(_users);
     });
 
     socket.on('stop_typing', function (_users) {
-        let typoChildren = [];
-        for (let i = 0; i < typingUsers.childNodes.length; i++) {
-            typoChildren.push(typingUsers.childNodes[i]);
-        }
-        for (let i = 0; i < typoChildren.length; i++) {
-            typingUsers.removeChild(typoChildren[i]);
-        }
+        removeTypos();
         createNewTypo(_users);
     });
 
@@ -152,6 +142,16 @@
             name.appendChild(nameText);
             newTypo.appendChild(name);
             typingUsers.appendChild(newTypo);
+        }
+    }
+
+    function removeTypos() {
+        let typoChildren = [];
+        for (let i = 0; i < typingUsers.childNodes.length; i++) {
+            typoChildren.push(typingUsers.childNodes[i]);
+        }
+        for (let i = 0; i < typoChildren.length; i++) {
+            typingUsers.removeChild(typoChildren[i]);
         }
     }
 })();
