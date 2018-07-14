@@ -50,6 +50,9 @@
             button_send.disabled = false;
             userHeader.innerText = user.name;
             socket.emit('new_user', user);
+            let form = document.getElementsByTagName('form');
+            let formParent = form[0].parentNode;
+            formParent.removeChild(form[0]);
         }
     };
 
