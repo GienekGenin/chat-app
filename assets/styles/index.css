@@ -31,3 +31,15 @@ body {
 #typing{
     grid-column: 2;
 }
+
+.fresh{
+    background-color: chartreuse;
+}
+
+.online{
+    background-color: green;
+}
+
+.offline{
+    background-color: red;
+}

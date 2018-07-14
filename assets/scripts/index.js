@@ -1,5 +1,5 @@
 (function () {
-    let button_save = document.getElementById('save_user');
+    let button_login = document.getElementById('save_user');
     let button_send = document.getElementById('send');
     let messages = document.getElementById('messages');
     let users = document.getElementById('users');
@@ -12,14 +12,16 @@
 
     let user = {
         'name': 'User name',
-        'nik': 'User nik'
+        'nik': 'User nik',
+        'status': String,
+        'created': String
     };
     let typing_status = true;
     let existing_users = [];
     let userHeader = document.getElementById('userName');
     userHeader.innerText = user.name;
 
-    button_save.onclick = function () {
+    button_login.onclick = function () {
         let name = document.getElementById('name');
         let nik = document.getElementById('nik_name');
         if (!name.value || !nik.value) {
@@ -27,12 +29,18 @@
         } else {
             for (let i = 0; i < existing_users.length; i++) {
                 if (existing_users[i].name === name.value) {
-                    alert('name is already taken');
+                    user.name = name.value;
+                    user.nik = nik.value;
+                    input_msg.disabled = false;
+                    button_send.disabled = false;
+                    userHeader.innerText = user.name;
                     return;
                 }
             }
+            existing_users.push(user);
             user.name = name.value;
             user.nik = nik.value;
+            user.created = moment().format("HH:mm:ss");
             input_msg.disabled = false;
             button_send.disabled = false;
             userHeader.innerText = user.name;
@@ -64,7 +72,7 @@
             socket.emit('stop_typing', '@' + user.name);
             typing_status = true;
         } else {
-            if(typing_status === true){
+            if (typing_status === true) {
                 socket.emit('typing', '@' + user.name);
                 typing_status = false;
             }
@@ -72,6 +80,7 @@
     };
 
     socket.on('chat_history', function (msgs, users, typing_users) {
+        console.log(users);
         existing_users = users;
         for (let i = 0; i < msgs.length; i++) {
             createMsg(msgs[i]);
@@ -102,8 +111,13 @@
     });
 
     function createUser(_user) {
+        let secondsLeft = -moment(_user.created, 'HH:mm:ss').diff(moment(), 'seconds');
+        console.log(secondsLeft);
         let user_box = document.createElement('div');
         user_box.setAttribute('class', 'user_box');
+        if(secondsLeft < 60){
+            user_box.classList.add('fresh');
+        }
         let name = document.createElement('span');
         let nik = document.createElement('span');
         let nameText = document.createTextNode(_user.name);
@@ -113,6 +127,10 @@
         user_box.appendChild(name);
         user_box.appendChild(nik);
         users.append(user_box);
+        setTimeout(function () {
+            user_box.classList.remove('fresh');
+            user_box.classList.add('online');
+        }, 20000 - secondsLeft*1000);
     }
 
     function createMsg(_msg) {
@@ -138,7 +156,7 @@
             let newTypo = document.createElement('div');
             let name = document.createElement('span');
             name.setAttribute('class', 'typing_user');
-            let nameText = document.createTextNode(_users[i]);
+            let nameText = document.createTextNode(_users[i] + ' is typing');
             name.appendChild(nameText);
             newTypo.appendChild(name);
             typingUsers.appendChild(newTypo);
@@ -155,3 +173,14 @@
         }
     }
 })();
+
+/*
+    socket.on('user_status_online',function (user) {
+        let user_box = document.getElementsByClassName('user_box');
+        for (let i = 0; i < user_box.length; i++) {
+            if (user_box[i].firstChild.innerText === user.name) {
+                user_box[i].setAttribute('class', 'user_box online');
+            }
+        }
+    });
+* */

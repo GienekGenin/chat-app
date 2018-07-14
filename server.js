@@ -38,6 +38,7 @@ server = app.listen(port, function () {
 
 const io = require('socket.io')(server);
 
+let allClients = [];
 let messages = [];
 let users = [];
 let typingUsers = [];
@@ -58,6 +59,7 @@ io.on('connection', function (socket) {
         io.emit('new_user', user);
     });
 
+    // typing and stop typing working gut
     socket.on('typing', function (user) {
         let counter = 0;
         for (let i = 0; i < typingUsers.length; i++) {
@@ -70,11 +72,10 @@ io.on('connection', function (socket) {
         }
         io.emit('typing', typingUsers);
     });
-
     socket.on('stop_typing', function (user) {
         for (let i = 0; i < typingUsers.length; i++) {
-            if(typingUsers[i] === user){
-                typingUsers.splice(i,1);
+            if (typingUsers[i] === user) {
+                typingUsers.splice(i, 1);
             }
         }
         io.emit('stop_typing', typingUsers);
@@ -82,3 +83,18 @@ io.on('connection', function (socket) {
 
     socket.emit('chat_history', messages, users, typingUsers);
 });
+
+/*
+allClients.push({'id': socket.id, 'user': user});
+     socket.on('disconnect', function () {
+        console.log('Got disconnect!');
+
+        let i = allClients.indexOf(socket);
+        let disc = allClients.splice(i, 1);
+        if(disc[0]){
+            console.log(disc[0].user.name, 'disc');
+            io.emit('exit', disc[0].user);
+        }
+        console.log('clients del: ', allClients);
+    });
+*/
