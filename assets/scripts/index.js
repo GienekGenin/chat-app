@@ -14,6 +14,8 @@
         'name': 'User name',
         'nik': 'User nik'
     };
+    let typing_status = true;
+    let existing_users = [];
     let userHeader = document.getElementById('userName');
     userHeader.innerText = user.name;
 
@@ -23,6 +25,12 @@
         if (!name.value || !nik.value) {
             alert('fill the fields');
         } else {
+            for (let i = 0; i < existing_users.length; i++) {
+                if (existing_users[i].name === name.value) {
+                    alert('name is already taken');
+                    return;
+                }
+            }
             user.name = name.value;
             user.nik = nik.value;
             input_msg.disabled = false;
@@ -47,53 +55,63 @@
             msg.value = "";
             socket.emit('chat_message', data);
             socket.emit('stop_typing', '@' + user.name);
+            typing_status = true;
         }
     };
 
     input_msg.onkeydown = function (e) {
-        if(e.key === "Backspace"){
+        if (e.key === "Backspace") {
             socket.emit('stop_typing', '@' + user.name);
+            typing_status = true;
         } else {
-            socket.emit('typing', '@' + user.name);
+            if(typing_status === true){
+                socket.emit('typing', '@' + user.name);
+                typing_status = false;
+            }
         }
     };
 
-    socket.on('chat_history', function (msgs, users) {
+    socket.on('chat_history', function (msgs, users, typing_users) {
+        existing_users = users;
         for (let i = 0; i < msgs.length; i++) {
             createMsg(msgs[i]);
         }
         for (let i = 0; i < users.length; i++) {
-            craeteUser(users[i]);
+            createUser(users[i]);
         }
     });
 
-    socket.on('typing', function (users) {
-
+    socket.on('typing', function (_users) {
+        let typoChildren = [];
+        for (let i = 0; i < typingUsers.childNodes.length; i++) {
+            typoChildren.push(typingUsers.childNodes[i]);
+        }
+        for (let i = 0; i < typoChildren.length; i++) {
+            typingUsers.removeChild(typoChildren[i]);
+        }
+        createNewTypo(_users);
     });
 
-    socket.on('stop_typing', function (users) {
-
+    socket.on('stop_typing', function (_users) {
+        let typoChildren = [];
+        for (let i = 0; i < typingUsers.childNodes.length; i++) {
+            typoChildren.push(typingUsers.childNodes[i]);
+        }
+        for (let i = 0; i < typoChildren.length; i++) {
+            typingUsers.removeChild(typoChildren[i]);
+        }
+        createNewTypo(_users);
     });
-
-    /*        for(let i = 0;i<users.length;i++){
-            let newTypo = document.createElement('div');
-            let name = document.createElement('span');
-            name.setAttribute('class', 'typing_user');
-            let nameText = document.createTextNode(users[i]);
-            name.appendChild(nameText);
-            newTypo.appendChild(name);
-            typingUsers.appendChild(newTypo);
-        }*/
 
     socket.on('chat_message', function (msg) {
         createMsg(msg);
     });
 
     socket.on('new_user', function (user) {
-        craeteUser(user);
+        createUser(user);
     });
 
-    function craeteUser(_user) {
+    function createUser(_user) {
         let user_box = document.createElement('div');
         user_box.setAttribute('class', 'user_box');
         let name = document.createElement('span');
@@ -123,5 +141,17 @@
         msg_box.appendChild(time);
         msg_box.appendChild(msg);
         messages.appendChild(msg_box);
+    }
+
+    function createNewTypo(_users) {
+        for (let i = 0; i < _users.length; i++) {
+            let newTypo = document.createElement('div');
+            let name = document.createElement('span');
+            name.setAttribute('class', 'typing_user');
+            let nameText = document.createTextNode(_users[i]);
+            name.appendChild(nameText);
+            newTypo.appendChild(name);
+            typingUsers.appendChild(newTypo);
+        }
     }
 })();

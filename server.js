@@ -60,20 +60,25 @@ io.on('connection', function (socket) {
 
     socket.on('typing', function (user) {
         let counter = 0;
-        for(let i = 0;i<typingUsers.length;i++){
-            if(typingUsers[i] === user){
+        for (let i = 0; i < typingUsers.length; i++) {
+            if (typingUsers[i] === user) {
                 counter++;
             }
         }
-        if(counter === 0){
+        if (counter === 0) {
             typingUsers.push(user);
         }
-        console.log(typingUsers);
+        io.emit('typing', typingUsers);
     });
 
     socket.on('stop_typing', function (user) {
-        console.log('stop_typing');
+        for (let i = 0; i < typingUsers.length; i++) {
+            if(typingUsers[i] === user){
+                typingUsers.splice(i,1);
+            }
+        }
+        io.emit('stop_typing', typingUsers);
     });
 
-    socket.emit('chat_history', messages, users);
+    socket.emit('chat_history', messages, users, typingUsers);
 });
