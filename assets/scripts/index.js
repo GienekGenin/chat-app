@@ -14,7 +14,8 @@
         'name': 'User name',
         'nik': 'User nik',
         'status': String,
-        'created': String
+        'created': String,
+        'exit': String
     };
     let typing_status = true;
     let existing_users = [];
@@ -31,9 +32,12 @@
                 if (existing_users[i].name === name.value) {
                     user.name = name.value;
                     user.nik = nik.value;
+                    user.created = moment().format("HH:mm:ss");
+                    user.exit = false;
                     input_msg.disabled = false;
                     button_send.disabled = false;
                     userHeader.innerText = user.name;
+                    socket.emit('new_connection', user);
                     return;
                 }
             }
@@ -41,6 +45,7 @@
             user.name = name.value;
             user.nik = nik.value;
             user.created = moment().format("HH:mm:ss");
+            user.exit = false;
             input_msg.disabled = false;
             button_send.disabled = false;
             userHeader.innerText = user.name;
@@ -110,13 +115,58 @@
         createUser(user);
     });
 
-    function createUser(_user) {
+    socket.on('new_connection', function (_user) {
         let secondsLeft = -moment(_user.created, 'HH:mm:ss').diff(moment(), 'seconds');
-        console.log(secondsLeft);
+        let user_box = document.getElementsByClassName('user_box');
+        for (let i = 0; i < user_box.length; i++) {
+            if (user_box[i].firstChild.innerText === _user.name) {
+                if(secondsLeft < 60){
+                    user_box[i].setAttribute('class', 'user_box fresh');
+                }
+                setTimeout(function () {
+                    user_box[i].setAttribute('class', 'user_box online');
+                }, 60000 - secondsLeft*1000);
+            }
+        }
+    });
+
+    socket.on('exit', function (_user) {
+        let secondsLeft = -moment(_user.created, 'HH:mm:ss').diff(moment(), 'seconds');
+        let user_box = document.getElementsByClassName('user_box');
+        for (let i = 0; i < user_box.length; i++) {
+            if (user_box[i].firstChild.innerText === _user.name) {
+                if(secondsLeft < 60){
+                    user_box[i].setAttribute('class', 'user_box just_leave');
+                }
+                setTimeout(function () {
+                    user_box[i].setAttribute('class', 'user_box offline');
+                }, 60000 - secondsLeft*1000);
+            }
+        }
+    });
+
+    function createUser(_user) {
         let user_box = document.createElement('div');
         user_box.setAttribute('class', 'user_box');
-        if(secondsLeft < 60){
-            user_box.classList.add('fresh');
+        if(_user.created){
+            let secondsLeft = -moment(_user.created, 'HH:mm:ss').diff(moment(), 'seconds');
+            if(secondsLeft < 60){
+                user_box.classList.add('fresh');
+            }
+            setTimeout(function () {
+                user_box.classList.remove('fresh');
+                user_box.classList.add('online');
+            }, 60000 - secondsLeft*1000);
+        }
+        if(_user.exit){
+            let secondsLeft = -moment(_user.created, 'HH:mm:ss').diff(moment(), 'seconds');
+            if(secondsLeft < 60){
+                user_box.classList.add('just_leave');
+            }
+            setTimeout(function () {
+                user_box.classList.remove('just_leave');
+                user_box.classList.add('offline');
+            }, 60000 - secondsLeft*1000);
         }
         let name = document.createElement('span');
         let nik = document.createElement('span');
@@ -127,10 +177,6 @@
         user_box.appendChild(name);
         user_box.appendChild(nik);
         users.append(user_box);
-        setTimeout(function () {
-            user_box.classList.remove('fresh');
-            user_box.classList.add('online');
-        }, 20000 - secondsLeft*1000);
     }
 
     function createMsg(_msg) {
