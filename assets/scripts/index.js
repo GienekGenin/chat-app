@@ -121,9 +121,11 @@
         for (let i = 0; i < user_box.length; i++) {
             if (user_box[i].firstChild.innerText === _user.name) {
                 if(secondsLeft < 60){
+                    console.log('new_connection < 60');
                     user_box[i].setAttribute('class', 'user_box fresh');
                 }
                 setTimeout(function () {
+                    console.log('new_connection > 60');
                     user_box[i].setAttribute('class', 'user_box online');
                 }, 60000 - secondsLeft*1000);
             }
@@ -131,14 +133,16 @@
     });
 
     socket.on('exit', function (_user) {
-        let secondsLeft = -moment(_user.created, 'HH:mm:ss').diff(moment(), 'seconds');
+        let secondsLeft = -moment(_user.exit, 'HH:mm:ss').diff(moment(), 'seconds');
         let user_box = document.getElementsByClassName('user_box');
         for (let i = 0; i < user_box.length; i++) {
             if (user_box[i].firstChild.innerText === _user.name) {
                 if(secondsLeft < 60){
+                    console.log('exit < 60');
                     user_box[i].setAttribute('class', 'user_box just_leave');
                 }
                 setTimeout(function () {
+                    console.log('exit > 60');
                     user_box[i].setAttribute('class', 'user_box offline');
                 }, 60000 - secondsLeft*1000);
             }
@@ -151,21 +155,24 @@
         if(_user.created){
             let secondsLeft = -moment(_user.created, 'HH:mm:ss').diff(moment(), 'seconds');
             if(secondsLeft < 60){
-                user_box.classList.add('fresh');
+                console.log('new_connection < 60');
+                user_box.setAttribute('class', 'user_box fresh');
             }
             setTimeout(function () {
-                user_box.classList.remove('fresh');
-                user_box.classList.add('online');
+                console.log('new_connection > 60');
+                user_box.setAttribute('class', 'user_box online');
             }, 60000 - secondsLeft*1000);
         }
         if(_user.exit){
-            let secondsLeft = -moment(_user.created, 'HH:mm:ss').diff(moment(), 'seconds');
+            let secondsLeft = -moment(_user.exit, 'HH:mm:ss').diff(moment(), 'seconds');
+            console.log(secondsLeft);
             if(secondsLeft < 60){
-                user_box.classList.add('just_leave');
+                console.log('exit < 60');
+                user_box.setAttribute('class', 'user_box just_leave');
             }
             setTimeout(function () {
-                user_box.classList.remove('just_leave');
-                user_box.classList.add('offline');
+                console.log('exit > 60');
+                user_box.setAttribute('class', 'user_box offline');
             }, 60000 - secondsLeft*1000);
         }
         let name = document.createElement('span');

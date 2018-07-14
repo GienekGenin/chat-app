@@ -84,7 +84,7 @@ io.on('connection', function (socket) {
         console.log(user, 'connected');
         for(let i =0;i<users.length;i++){
             if(users[i].name === user.name){
-                users[i] = user.name;
+                users[i] = user;
             }
         }
         for (let i = 0; i < allClients.length; i++) {
