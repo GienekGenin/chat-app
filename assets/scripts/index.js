@@ -19,7 +19,7 @@
     };
     let typing_status = true;
     let existing_users = [];
-    let userHeader = document.getElementById('userName');
+    let userHeader = document.getElementById('you');
     userHeader.innerText = user.name;
 
     button_login.onclick = function () {
@@ -36,7 +36,9 @@
                     user.exit = false;
                     input_msg.disabled = false;
                     button_send.disabled = false;
-                    userHeader.innerText = user.name;
+                    userHeader.innerText = user.name + ' @' + user.nik;
+                    let popup = document.getElementById('popup_default');
+                    popup.setAttribute('style', 'display:none');
                     socket.emit('new_connection', user);
                     return;
                 }
@@ -48,11 +50,10 @@
             user.exit = false;
             input_msg.disabled = false;
             button_send.disabled = false;
-            userHeader.innerText = user.name;
+            userHeader.innerText = user.name + ' @' + user.nik;
+            let popup = document.getElementById('popup_default');
+            popup.setAttribute('style', 'display:none');
             socket.emit('new_user', user);
-            let form = document.getElementsByTagName('form');
-            let formParent = form[0].parentNode;
-            formParent.removeChild(form[0]);
         }
     };
 
@@ -60,6 +61,7 @@
         let msg = document.getElementById('msg');
         let data = {
             'name': user.name,
+            'nik': user.nik,
             'text': String,
             'time': String
         };
@@ -123,14 +125,14 @@
         let user_box = document.getElementsByClassName('user_box');
         for (let i = 0; i < user_box.length; i++) {
             if (user_box[i].firstChild.innerText === _user.name) {
-                if(secondsLeft < 60){
+                if (secondsLeft < 60) {
                     console.log('new_connection < 60');
                     user_box[i].setAttribute('class', 'user_box fresh');
                 }
                 setTimeout(function () {
                     console.log('new_connection > 60');
                     user_box[i].setAttribute('class', 'user_box online');
-                }, 60000 - secondsLeft*1000);
+                }, 60000 - secondsLeft * 1000);
             }
         }
     });
@@ -140,14 +142,14 @@
         let user_box = document.getElementsByClassName('user_box');
         for (let i = 0; i < user_box.length; i++) {
             if (user_box[i].firstChild.innerText === _user.name) {
-                if(secondsLeft < 60){
+                if (secondsLeft < 60) {
                     console.log('exit < 60');
                     user_box[i].setAttribute('class', 'user_box just_leave');
                 }
                 setTimeout(function () {
                     console.log('exit > 60');
                     user_box[i].setAttribute('class', 'user_box offline');
-                }, 60000 - secondsLeft*1000);
+                }, 60000 - secondsLeft * 1000);
             }
         }
     });
@@ -155,28 +157,28 @@
     function createUser(_user) {
         let user_box = document.createElement('div');
         user_box.setAttribute('class', 'user_box');
-        if(_user.created){
+        if (_user.created) {
             let secondsLeft = -moment(_user.created, 'HH:mm:ss').diff(moment(), 'seconds');
-            if(secondsLeft < 60){
+            if (secondsLeft < 60) {
                 console.log('new_connection < 60');
                 user_box.setAttribute('class', 'user_box fresh');
             }
             setTimeout(function () {
                 console.log('new_connection > 60');
                 user_box.setAttribute('class', 'user_box online');
-            }, 60000 - secondsLeft*1000);
+            }, 60000 - secondsLeft * 1000);
         }
-        if(_user.exit){
+        if (_user.exit) {
             let secondsLeft = -moment(_user.exit, 'HH:mm:ss').diff(moment(), 'seconds');
             console.log(secondsLeft);
-            if(secondsLeft < 60){
+            if (secondsLeft < 60) {
                 console.log('exit < 60');
                 user_box.setAttribute('class', 'user_box just_leave');
             }
             setTimeout(function () {
                 console.log('exit > 60');
                 user_box.setAttribute('class', 'user_box offline');
-            }, 60000 - secondsLeft*1000);
+            }, 60000 - secondsLeft * 1000);
         }
         let name = document.createElement('span');
         let nik = document.createElement('span');
@@ -190,12 +192,18 @@
     }
 
     function createMsg(_msg) {
+        let parsedText = JSON.stringify(_msg.text);
         let msg_box = document.createElement('div');
         msg_box.setAttribute('class', 'msg_box');
         let name = document.createElement('span');
+        name.setAttribute('class', 'name');
         let time = document.createElement('span');
+        time.setAttribute('class', 'time');
         let msg = document.createElement('span');
-        let nameText = document.createTextNode(_msg.name);
+        if (parsedText.search('@' + user.nik) > 0) {
+            msg.setAttribute('class', 'mentioned');
+        }
+        let nameText = document.createTextNode(_msg.name + ` (@${_msg.nik})`);
         let timeText = document.createTextNode(_msg.time);
         let msgText = document.createTextNode(_msg.text);
         name.appendChild(nameText);
@@ -220,7 +228,7 @@
     }
 
     function removeTypos() {
-        if(typingUsers){
+        if (typingUsers) {
             while (typingUsers.firstChild) {
                 typingUsers.removeChild(typingUsers.firstChild);
             }
