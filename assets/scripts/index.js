@@ -220,23 +220,10 @@
     }
 
     function removeTypos() {
-        let typoChildren = [];
-        for (let i = 0; i < typingUsers.childNodes.length; i++) {
-            typoChildren.push(typingUsers.childNodes[i]);
-        }
-        for (let i = 0; i < typoChildren.length; i++) {
-            typingUsers.removeChild(typoChildren[i]);
+        if(typingUsers){
+            while (typingUsers.firstChild) {
+                typingUsers.removeChild(typingUsers.firstChild);
+            }
         }
     }
 })();
-
-/*
-    socket.on('user_status_online',function (user) {
-        let user_box = document.getElementsByClassName('user_box');
-        for (let i = 0; i < user_box.length; i++) {
-            if (user_box[i].firstChild.innerText === user.name) {
-                user_box[i].setAttribute('class', 'user_box online');
-            }
-        }
-    });
-* */
