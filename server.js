@@ -4,7 +4,6 @@ const bodyParser = require("body-parser");
 const moment = require('moment');
 
 const app = express();
-let server = require('http').Server(app);
 const port = 8000;
 
 app.use(express.static(path.normalize(__dirname + "/assets/html")));
@@ -26,18 +25,21 @@ app.get('/users', function (req,res) {
 
 app.get('/messages', function (req,res) {
     res.json(messages);
-    console.log(messages);
 });
 
 app.post('/users', function (req,res) {
     users.push(req.body);
+    res.json(users);
 });
 
 app.post('/messages', function (req,res) {
+    if (messages.length >= 100) {
+        messages.shift();
+    }
     messages.push(req.body);
-    console.log(messages);
+    res.json(messages);
 });
 
-server = app.listen(port, function () {
+app.listen(port, function () {
     console.log(`App now running on port ${port}`);
 });

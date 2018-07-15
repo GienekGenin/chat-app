@@ -4,7 +4,6 @@
     let messages = document.getElementById('messages');
     let users = document.getElementById('users');
     let input_msg = document.getElementById('msg');
-    let typingUsers = document.getElementById('typing');
 
     input_msg.value = "";
 
@@ -12,8 +11,8 @@
         'name': 'User name',
         'nik': 'User nik'
     };
-    let typing_status = true;
     let existing_users = [];
+    let existing_messages = [];
     let userHeader = document.getElementById('userName');
     userHeader.innerText = user.name;
 
@@ -40,9 +39,10 @@
       ajaxReq({
           url:'/messages',
           method:'GET',
-          callback:function (msg) {
-              msg = JSON.parse(msg);
-              console.log(msg);
+          callback:function (msgs) {
+              msgs = JSON.parse(msgs);
+              removeMsgs();
+              createMsg(msgs);
           }
       })
     };
@@ -51,9 +51,10 @@
         ajaxReq({
             url:'/users',
             method:'GET',
-            callback:function (msg) {
-                msg = JSON.parse(msg);
-                console.log(msg);
+            callback:function (users) {
+                users = JSON.parse(users);
+                removeUsers();
+                createUsers(users);
             }
         })
     };
@@ -64,7 +65,7 @@
     setInterval(function () {
         getUsers();
         getMessages();
-    },1000);
+    },2000);
 
     button_login.onclick = function () {
         let name = document.getElementById('name');
@@ -121,36 +122,52 @@
         }
     };
 
-    function createUser(_user) {
-        let user_box = document.createElement('div');
-        user_box.setAttribute('class', 'user_box');
-        let name = document.createElement('span');
-        let nik = document.createElement('span');
-        let nameText = document.createTextNode(_user.name);
-        let nikText = document.createTextNode(_user.nik);
-        name.appendChild(nameText);
-        nik.appendChild(nikText);
-        user_box.appendChild(name);
-        user_box.appendChild(nik);
-        users.append(user_box);
+    function removeUsers() {
+        while (users.firstChild) {
+            users.removeChild(users.firstChild);
+        }
     }
 
-    function createMsg(_msg) {
-        let msg_box = document.createElement('div');
-        msg_box.setAttribute('class', 'msg_box');
-        let name = document.createElement('span');
-        let time = document.createElement('span');
-        let msg = document.createElement('span');
-        let nameText = document.createTextNode(_msg.name);
-        let timeText = document.createTextNode(_msg.time);
-        let msgText = document.createTextNode(_msg.text);
-        name.appendChild(nameText);
-        time.appendChild(timeText);
-        msg.appendChild(msgText);
-        msg_box.appendChild(name);
-        msg_box.appendChild(time);
-        msg_box.appendChild(msg);
-        messages.appendChild(msg_box);
+    function removeMsgs() {
+        while (messages.firstChild) {
+            messages.removeChild(messages.firstChild);
+        }
+    }
+
+    function createUsers(_users) {
+        for(let i =0;i<_users.length;i++){
+            let user_box = document.createElement('div');
+            user_box.setAttribute('class', 'user_box');
+            let name = document.createElement('span');
+            let nik = document.createElement('span');
+            let nameText = document.createTextNode(_users[i].name);
+            let nikText = document.createTextNode(_users[i].nik);
+            name.appendChild(nameText);
+            nik.appendChild(nikText);
+            user_box.appendChild(name);
+            user_box.appendChild(nik);
+            users.append(user_box);
+        }
+    }
+
+    function createMsg(_msgs) {
+        for(let i =0;i<_msgs.length;i++){
+            let msg_box = document.createElement('div');
+            msg_box.setAttribute('class', 'msg_box');
+            let name = document.createElement('span');
+            let time = document.createElement('span');
+            let msg = document.createElement('span');
+            let nameText = document.createTextNode(_msgs[i].name);
+            let timeText = document.createTextNode(_msgs[i].time);
+            let msgText = document.createTextNode(_msgs[i].text);
+            name.appendChild(nameText);
+            time.appendChild(timeText);
+            msg.appendChild(msgText);
+            msg_box.appendChild(name);
+            msg_box.appendChild(time);
+            msg_box.appendChild(msg);
+            messages.appendChild(msg_box);
+        }
     }
 
 })();
