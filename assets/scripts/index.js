@@ -8,12 +8,12 @@
     input_msg.value = "";
 
     let user = {
-        'name': 'User name',
+        'name': 'Pick user name',
         'nik': 'User nik'
     };
     let existing_users = [];
     let existing_messages = [];
-    let userHeader = document.getElementById('userName');
+    let userHeader = document.getElementById('you');
     userHeader.innerText = user.name;
 
     let ajaxReq = function (options) {
@@ -36,23 +36,24 @@
     };
 
     let getMessages = function () {
-      ajaxReq({
-          url:'/messages',
-          method:'GET',
-          callback:function (msgs) {
-              msgs = JSON.parse(msgs);
-              removeMsgs();
-              createMsg(msgs);
-          }
-      })
+        ajaxReq({
+            url: '/messages',
+            method: 'GET',
+            callback: function (msgs) {
+                msgs = JSON.parse(msgs);
+                removeMsgs();
+                createMsg(msgs);
+            }
+        })
     };
 
     let getUsers = function () {
         ajaxReq({
-            url:'/users',
-            method:'GET',
-            callback:function (users) {
+            url: '/users',
+            method: 'GET',
+            callback: function (users) {
                 users = JSON.parse(users);
+                existing_users = users;
                 removeUsers();
                 createUsers(users);
             }
@@ -65,7 +66,7 @@
     setInterval(function () {
         getUsers();
         getMessages();
-    },2000);
+    }, 5000);
 
     button_login.onclick = function () {
         let name = document.getElementById('name');
@@ -74,12 +75,14 @@
             alert('fill the fields');
         } else {
             for (let i = 0; i < existing_users.length; i++) {
-                if (existing_users[i].name === name.value) {
+                if (existing_users[i].name === name.value && existing_users[i].nik === nik.value) {
                     user.name = name.value;
                     user.nik = nik.value;
                     input_msg.disabled = false;
                     button_send.disabled = false;
-                    userHeader.innerText = user.name;
+                    userHeader.innerText = user.name + ' @'+user.nik;
+                    let popup = document.getElementById('popup_default');
+                    popup.setAttribute('style', 'display:none');
                     return;
                 }
             }
@@ -89,9 +92,8 @@
             input_msg.disabled = false;
             button_send.disabled = false;
             userHeader.innerText = user.name;
-            let form = document.getElementsByTagName('form');
-            let formParent = form[0].parentNode;
-            formParent.removeChild(form[0]);
+            let popup = document.getElementById('popup_default');
+            popup.setAttribute('style', 'display:none');
             ajaxReq({
                 method: 'POST',
                 url: '/users',
@@ -104,6 +106,7 @@
         let msg = document.getElementById('msg');
         let data = {
             'name': user.name,
+            'nik': user.nik,
             'text': String,
             'time': String
         };
@@ -135,13 +138,13 @@
     }
 
     function createUsers(_users) {
-        for(let i =0;i<_users.length;i++){
+        for (let i = 0; i < _users.length; i++) {
             let user_box = document.createElement('div');
             user_box.setAttribute('class', 'user_box');
             let name = document.createElement('span');
             let nik = document.createElement('span');
             let nameText = document.createTextNode(_users[i].name);
-            let nikText = document.createTextNode(_users[i].nik);
+            let nikText = document.createTextNode(` (@${_users[i].nik})`);
             name.appendChild(nameText);
             nik.appendChild(nikText);
             user_box.appendChild(name);
@@ -151,13 +154,19 @@
     }
 
     function createMsg(_msgs) {
-        for(let i =0;i<_msgs.length;i++){
+        for (let i = 0; i < _msgs.length; i++) {
+            let parsedText = JSON.stringify(_msgs[i].text);
             let msg_box = document.createElement('div');
             msg_box.setAttribute('class', 'msg_box');
             let name = document.createElement('span');
+            name.setAttribute('class', 'name');
             let time = document.createElement('span');
+            time.setAttribute('class', 'time');
             let msg = document.createElement('span');
-            let nameText = document.createTextNode(_msgs[i].name);
+            if(parsedText.search('@'+user.nik) > 0){
+                msg.setAttribute('class', 'mentioned');
+            }
+            let nameText = document.createTextNode(_msgs[i].name + ` (@${_msgs[i].nik})`);
             let timeText = document.createTextNode(_msgs[i].time);
             let msgText = document.createTextNode(_msgs[i].text);
             name.appendChild(nameText);

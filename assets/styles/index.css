@@ -2,48 +2,179 @@ body {
     background-color: whitesmoke;
 }
 
+.container {
+    border: 1px solid;
+    padding-right: 0;
+    padding-left: 0;
+    max-width: 700px;
+    min-width: 560px;
+}
+
+.container h1 {
+    background-color: black;
+    color: white;
+    margin-bottom: 0;
+}
+
+.row {
+    margin-left: 0;
+    margin-right: 0;
+}
+
 .login {
     display: grid;
 }
 
-.chat-app {
-    display: grid;
-    grid-template-columns: auto auto;
+h1 {
+
 }
 
-#app-name {
-    grid-column: 1 / span 2;
+form {
+    display: grid;
+}
+
+span {
+    max-width: 848px;
+    text-overflow: ellipsis;
+    overflow: hidden;
+}
+
+.chat-app {
+    border-top: 1px solid;
+    display: grid;
+    grid-template-columns: 150px 1fr;
+}
+
+.chat-app div:first-child {
+    grid-column: 1;
+}
+
+aside {
+    grid-row: 2 / span 3;
+}
+
+#msg_title {
+    border-left: 1px solid;
 }
 
 #control {
     grid-column: 2;
+    border-left: 1px solid;
+    display: flex;
+}
+
+#msg {
+    width: 85%;
+}
+
+#send {
+    width: 15%;
+}
+
+#messages {
+    border-left: 1px solid;
+    display: flex;
+    flex-wrap: wrap;
 }
 
 .msg_box {
     display: grid;
     grid-template-columns: auto auto;
+    width: 100%;
+    margin-right: 20px;
+    margin-left: 20px;
 }
 
 .msg_box span:last-child {
     grid-column: 1 / span 2;
 }
 
-#typing{
+.mentioned{
+    color: blue;
+}
+
+.time{
+    justify-self: end;
+}
+
+.name{
+    justify-self: start;
+}
+
+#typing {
     grid-column: 2;
 }
 
-.fresh{
-    background-color: chartreuse;
+/*popup*/
+/* popup styles */
+.popup {
+    display: none;
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    z-index: 10;
 }
 
-.online{
-    background-color: green;
+.popup-overlay {
+    background: rgba(0, 0, 0, 0.9);
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    height: 650px;
 }
 
-.offline{
-    background-color: red;
+.popup-content {
+    font-family: Serif;
+    position: absolute;
+    width: 500px;
+    margin: -58px 0 0 -264px;
+    left: 50%;
+    top: 50%;
+    z-index: 11;
+    padding-left: 0;
+    padding-right: 0;
+    text-align: center;
+    background-color: rebeccapurple;;
 }
 
-.just_leave{
-    background-color: gray;
+.close-popup {
+    display: inline-block;
+    position: absolute;
+    top: -8px;
+    right: -30px;
+    font-size: 42px;
+}
+
+.btn {
+    border: 1px solid;
+    display: inline-block;
+    padding: 5px 20px;
+}
+
+.btn:hover {
+    background: #fff;
+    color: rgb(0, 159, 211);
+}
+
+.popup {
+    -webkit-perspective: 1200px;
+    -moz-perspective: 1200px;
+    perspective: 1200px;
+}
+
+.popup-content {
+    -webkit-backface-visibility: hidden;
+    -moz-backface-visibility: hidden;
+    backface-visibility: hidden;
+    -webkit-transform: translate3d(0, 0, 0);
+    -moz-transform: translate3d(0, 0, 0);
+    transform: translate3d(0, 0, 0);
+    -webkit-transform-style: preserve-3d;
+    -moz-transform-style: preserve-3d;
+    transform-style: preserve-3d;
+    color: #fff;
 }
