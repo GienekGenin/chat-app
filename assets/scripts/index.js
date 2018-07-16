@@ -145,7 +145,7 @@
         let typing_boxes = document.getElementsByClassName('type_box');
         let type_container = document.getElementById('typing');
         for(let i =0;i<typing_boxes.length;i++){
-            if(typing_boxes[i].firstChild.id === 'typing_user_'+`${_user.name} (@${_user.nik})`){
+            if(typing_boxes[i].firstChild.id === `typing_user_${_user.name} (@${_user.nik})`){
                 type_container.removeChild(typing_boxes[i]);
             }
         }
@@ -171,15 +171,20 @@
     function createUser(_user) {
         let user_box = document.createElement('div');
         user_box.setAttribute('class', 'user_box');
+        let status = document.createElement('span');
+        status.setAttribute('id',`${_user.name + _user.nik}`);
+        let statusText = document.createTextNode('');
         if (_user.created) {
             let secondsLeft = -moment(_user.created, 'HH:mm:ss').diff(moment(), 'seconds');
             if (secondsLeft < 60) {
                 console.log('new_connection < 60');
                 user_box.setAttribute('class', 'user_box fresh');
+                status.innerText = 'Just appeared';
             }
             setTimeout(function () {
                 console.log('new_connection > 60');
                 user_box.setAttribute('class', 'user_box online');
+                status.innerText = 'Online';
             }, 60000 - secondsLeft * 1000);
         }
         if (_user.exit) {
@@ -188,17 +193,16 @@
             if (secondsLeft < 60) {
                 console.log('exit < 60');
                 user_box.setAttribute('class', 'user_box just_leave');
+                status.innerText = 'Just left';
             }
             setTimeout(function () {
                 console.log('exit > 60');
                 user_box.setAttribute('class', 'user_box offline');
+                status.innerText = 'Offline';
             }, 60000 - secondsLeft * 1000);
         }
         let name = document.createElement('span');
-        let status = document.createElement('span');
-        status.setAttribute('id',`${_user.name + _user.nik}`);
         let nameText = document.createTextNode(_user.name+` (@${_user.nik})`);
-        let statusText = document.createTextNode('online');
         name.appendChild(nameText);
         status.appendChild(statusText);
         user_box.appendChild(name);
