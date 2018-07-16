@@ -64,6 +64,11 @@ aside {
     grid-row: 2 / span 3;
 }
 
+.user_box{
+    text-overflow: ellipsis;
+    overflow: hidden;
+}
+
 #msg_title {
     border-left: 1px solid;
 }

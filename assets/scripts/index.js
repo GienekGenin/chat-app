@@ -72,18 +72,18 @@
             data.time = moment().format("HH:mm:ss");
             msg.value = "";
             socket.emit('chat_message', data);
-            socket.emit('stop_typing', '@' + user.name);
+            socket.emit('stop_typing', `${user.name} (@${user.nik})`);
             typing_status = true;
         }
     };
 
     input_msg.onkeydown = function (e) {
         if (e.key === "Backspace") {
-            socket.emit('stop_typing', '@' + user.name);
+            socket.emit('stop_typing', `${user.name} (@${user.nik})`);
             typing_status = true;
         } else {
             if (typing_status === true) {
-                socket.emit('typing', '@' + user.name);
+                socket.emit('typing', `${user.name} (@${user.nik})`);
                 typing_status = false;
             }
         }
@@ -121,35 +121,48 @@
     });
 
     socket.on('new_connection', function (_user) {
+        let status = document.getElementById(`${_user.name + _user.nik}`);
         let secondsLeft = -moment(_user.created, 'HH:mm:ss').diff(moment(), 'seconds');
         let user_box = document.getElementsByClassName('user_box');
         for (let i = 0; i < user_box.length; i++) {
-            if (user_box[i].firstChild.innerText === _user.name) {
+            if (user_box[i].firstChild.innerText === _user.name + ` (@${_user.nik})`) {
                 if (secondsLeft < 60) {
                     console.log('new_connection < 60');
                     user_box[i].setAttribute('class', 'user_box fresh');
+                    status.innerText = 'just appeared';
                 }
                 setTimeout(function () {
                     console.log('new_connection > 60');
                     user_box[i].setAttribute('class', 'user_box online');
+                    status.innerText = 'online';
                 }, 60000 - secondsLeft * 1000);
             }
         }
     });
 
     socket.on('exit', function (_user) {
+        let status = document.getElementById(`${_user.name + _user.nik}`);
+        let typing_boxes = document.getElementsByClassName('type_box');
+        let type_container = document.getElementById('typing');
+        for(let i =0;i<typing_boxes.length;i++){
+            if(typing_boxes[i].firstChild.id === 'typing_user_'+`${_user.name} (@${_user.nik})`){
+                type_container.removeChild(typing_boxes[i]);
+            }
+        }
         createMsg({'name':_user.name,'nik':_user.nik,'time':_user.exit,'text':'Just left'});
         let secondsLeft = -moment(_user.exit, 'HH:mm:ss').diff(moment(), 'seconds');
         let user_box = document.getElementsByClassName('user_box');
         for (let i = 0; i < user_box.length; i++) {
-            if (user_box[i].firstChild.innerText === _user.name) {
+            if (user_box[i].firstChild.innerText === _user.name + ` (@${_user.nik})`) {
                 if (secondsLeft < 60) {
                     console.log('exit < 60');
+                    status.innerText = 'just left';
                     user_box[i].setAttribute('class', 'user_box just_leave');
                 }
                 setTimeout(function () {
                     console.log('exit > 60');
                     user_box[i].setAttribute('class', 'user_box offline');
+                    status.innerText = 'offline';
                 }, 60000 - secondsLeft * 1000);
             }
         }
@@ -182,13 +195,14 @@
             }, 60000 - secondsLeft * 1000);
         }
         let name = document.createElement('span');
-        let nik = document.createElement('span');
-        let nameText = document.createTextNode(_user.name);
-        let nikText = document.createTextNode(` (@${_user.nik})`);
+        let status = document.createElement('span');
+        status.setAttribute('id',`${_user.name + _user.nik}`);
+        let nameText = document.createTextNode(_user.name+` (@${_user.nik})`);
+        let statusText = document.createTextNode('online');
         name.appendChild(nameText);
-        nik.appendChild(nikText);
+        status.appendChild(statusText);
         user_box.appendChild(name);
-        user_box.appendChild(nik);
+        user_box.appendChild(status);
         users.append(user_box);
     }
 
@@ -219,8 +233,9 @@
     function createNewTypo(_users) {
         for (let i = 0; i < _users.length; i++) {
             let newTypo = document.createElement('div');
+            newTypo.setAttribute('class', 'type_box');
             let name = document.createElement('span');
-            name.setAttribute('class', 'typing_user');
+            name.setAttribute('id', 'typing_user_'+_users[i]);
             let nameText = document.createTextNode(_users[i] + ' is typing');
             name.appendChild(nameText);
             newTypo.appendChild(name);
