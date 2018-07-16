@@ -29,14 +29,14 @@
             alert('fill the fields');
         } else {
             for (let i = 0; i < existing_users.length; i++) {
-                if (existing_users[i].name === name.value) {
+                if (existing_users[i].name === name.value && existing_users[i].nik === nik.value) {
                     user.name = name.value;
                     user.nik = nik.value;
                     user.created = moment().format("HH:mm:ss");
                     user.exit = false;
                     input_msg.disabled = false;
                     button_send.disabled = false;
-                    userHeader.innerText = user.name + ' @' + user.nik;
+                    userHeader.innerText = user.name + ' (@' + user.nik+')';
                     let popup = document.getElementById('popup_default');
                     popup.setAttribute('style', 'display:none');
                     socket.emit('new_connection', user);
@@ -138,6 +138,7 @@
     });
 
     socket.on('exit', function (_user) {
+        createMsg({'name':_user.name,'nik':_user.nik,'time':_user.exit,'text':'Just left'});
         let secondsLeft = -moment(_user.exit, 'HH:mm:ss').diff(moment(), 'seconds');
         let user_box = document.getElementsByClassName('user_box');
         for (let i = 0; i < user_box.length; i++) {
@@ -183,7 +184,7 @@
         let name = document.createElement('span');
         let nik = document.createElement('span');
         let nameText = document.createTextNode(_user.name);
-        let nikText = document.createTextNode(_user.nik);
+        let nikText = document.createTextNode(` (@${_user.nik})`);
         name.appendChild(nameText);
         nik.appendChild(nikText);
         user_box.appendChild(name);
