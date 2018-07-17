@@ -66,7 +66,7 @@
     setInterval(function () {
         getUsers();
         getMessages();
-    }, 50000);
+    }, 5000);
 
     button_login.onclick = function () {
         let name = document.getElementById('name');

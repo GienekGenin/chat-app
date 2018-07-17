@@ -62,7 +62,7 @@ span {
 .chat-app {
     border-top: 1px solid;
     display: grid;
-    /*grid-template-columns: 150px 1fr;*/
+    grid-template-columns: 200px 1fr;
 }
 
 .chat-app div:first-child {
@@ -96,10 +96,14 @@ aside {
     border-left: 1px solid;
     display: flex;
     flex-wrap: wrap;
+    height: 300px;
+    overflow-y: scroll;
+    align-content: start;
 }
 
 .msg_box {
     display: grid;
+    grid-template-rows: 30px auto;
     grid-template-columns: auto auto;
     width: 100%;
     margin-right: 20px;
