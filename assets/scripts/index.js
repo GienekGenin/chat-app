@@ -36,7 +36,7 @@
                     user.exit = false;
                     input_msg.disabled = false;
                     button_send.disabled = false;
-                    userHeader.innerText = user.name + ' (@' + user.nik+')';
+                    userHeader.innerText = `${user.name} (@${user.nik})`;
                     let popup = document.getElementById('popup_default');
                     popup.setAttribute('style', 'display:none');
                     socket.emit('new_connection', user);
@@ -50,7 +50,7 @@
             user.exit = false;
             input_msg.disabled = false;
             button_send.disabled = false;
-            userHeader.innerText = user.name + ' @' + user.nik;
+            userHeader.innerText = `${user.name} (@${user.nik})`;
             let popup = document.getElementById('popup_default');
             popup.setAttribute('style', 'display:none');
             socket.emit('new_user', user);
@@ -129,12 +129,12 @@
                 if (secondsLeft < 60) {
                     console.log('new_connection < 60');
                     user_box[i].setAttribute('class', 'user_box fresh');
-                    status.innerText = 'just appeared';
+                    status.innerText = 'Just appeared';
                 }
                 setTimeout(function () {
                     console.log('new_connection > 60');
                     user_box[i].setAttribute('class', 'user_box online');
-                    status.innerText = 'online';
+                    status.innerText = 'Online';
                 }, 60000 - secondsLeft * 1000);
             }
         }
@@ -156,13 +156,13 @@
             if (user_box[i].firstChild.innerText === _user.name + ` (@${_user.nik})`) {
                 if (secondsLeft < 60) {
                     console.log('exit < 60');
-                    status.innerText = 'just left';
+                    status.innerText = 'Just left';
                     user_box[i].setAttribute('class', 'user_box just_leave');
                 }
                 setTimeout(function () {
                     console.log('exit > 60');
                     user_box[i].setAttribute('class', 'user_box offline');
-                    status.innerText = 'offline';
+                    status.innerText = 'Offline';
                 }, 60000 - secondsLeft * 1000);
             }
         }
