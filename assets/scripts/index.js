@@ -66,7 +66,7 @@
     setInterval(function () {
         getUsers();
         getMessages();
-    }, 1000);
+    }, 50000);
 
     button_login.onclick = function () {
         let name = document.getElementById('name');
@@ -80,7 +80,7 @@
                     user.nik = nik.value;
                     input_msg.disabled = false;
                     button_send.disabled = false;
-                    userHeader.innerText = `${user.name} @${user.nik}`;
+                    userHeader.innerText = `${user.name} (@${user.nik})`;
                     let popup = document.getElementById('popup_default');
                     popup.setAttribute('style', 'display:none');
                     return;
@@ -91,7 +91,7 @@
             user.nik = nik.value;
             input_msg.disabled = false;
             button_send.disabled = false;
-            userHeader.innerText = user.name;
+            userHeader.innerText = `${user.name} (@${user.nik})`;
             let popup = document.getElementById('popup_default');
             popup.setAttribute('style', 'display:none');
             ajaxReq({
