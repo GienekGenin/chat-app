@@ -1,5 +1,16 @@
+@import url(https://fonts.googleapis.com/css?family=Encode+Sans+Condensed);
+@import url(https://fonts.googleapis.com/css?family=Gaegu);
+
 body {
     background-color: whitesmoke;
+}
+
+a, li, span, button, input, p, label {
+    font-family: 'Encode Sans Condensed', sans-serif !important;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-family: 'Gaegu', cursive !important;
 }
 
 .container {
@@ -25,8 +36,8 @@ body {
     display: grid;
 }
 
-h1 {
-
+h3 {
+    margin-bottom: 0;
 }
 
 form {
@@ -138,7 +149,7 @@ aside {
     padding-left: 0;
     padding-right: 0;
     text-align: center;
-    background-color: rebeccapurple;;
+    background-color: black;;
 }
 
 .close-popup {
