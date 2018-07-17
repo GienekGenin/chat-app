@@ -66,7 +66,7 @@
     setInterval(function () {
         getUsers();
         getMessages();
-    }, 5000);
+    }, 1000);
 
     button_login.onclick = function () {
         let name = document.getElementById('name');
@@ -80,7 +80,7 @@
                     user.nik = nik.value;
                     input_msg.disabled = false;
                     button_send.disabled = false;
-                    userHeader.innerText = user.name + ' @'+user.nik;
+                    userHeader.innerText = `${user.name} @${user.nik}`;
                     let popup = document.getElementById('popup_default');
                     popup.setAttribute('style', 'display:none');
                     return;
@@ -166,7 +166,7 @@
             if(parsedText.search('@'+user.nik) > 0){
                 msg.setAttribute('class', 'mentioned');
             }
-            let nameText = document.createTextNode(_msgs[i].name + ` (@${_msgs[i].nik})`);
+            let nameText = document.createTextNode(`${_msgs[i].name} (@${_msgs[i].nik})`);
             let timeText = document.createTextNode(_msgs[i].time);
             let msgText = document.createTextNode(_msgs[i].text);
             name.appendChild(nameText);

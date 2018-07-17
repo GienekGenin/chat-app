@@ -13,6 +13,11 @@ h1, h2, h3, h4, h5, h6 {
     font-family: 'Gaegu', cursive !important;
 }
 
+h4{
+    text-align: center;
+    border-bottom: 1px solid;
+}
+
 .container {
     border: 1px solid;
     padding-right: 0;
@@ -62,6 +67,7 @@ span {
 
 aside {
     grid-row: 2 / span 3;
+    margin-left: 10px;
 }
 
 #msg_title {
