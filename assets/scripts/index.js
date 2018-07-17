@@ -219,7 +219,7 @@
         let time = document.createElement('span');
         time.setAttribute('class', 'time');
         let msg = document.createElement('span');
-        if (parsedText.search('@' + user.nik) > 0) {
+        if(parsedText.search('@'+user.nik+'') > 0){
             msg.setAttribute('class', 'mentioned');
         }
         let nameText = document.createTextNode(_msg.name + ` (@${_msg.nik})`);
